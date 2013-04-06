@@ -80,4 +80,17 @@ class ProductsController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+  def who_bought
+    @product = Product.find(params[:id])
+    @latest_order = @product.orders.order(:updated_at).last
+    if stale?(@latest_order)
+      respond_to do |format|
+        format.html
+        format.xml
+        format.json { render json: @product.to_json(include: :orders) }
+        format.atom  
+      end
+    end
+  end
 end
